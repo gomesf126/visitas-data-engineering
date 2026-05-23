@@ -16,42 +16,39 @@ A solução foi desenhada seguindo os princípios de alta coesão e baixo acopla
 ```text
 project/
 │
-├── data/                       # Repositório de Dados (Camadas de Maturidade)
-│   ├── raw/                    # Dados brutos originais do extrator
-│   ├── processed/              # Tabelas higienizadas após limpeza inicial
-│   └── output/                 # Datasets finais enriquecidos e agregados
+├── data/                       # Camadas de armazenamento dos dados
+│   ├── raw/                    # CSVs brutos originais
+│   ├── processed/              # Dados higienizados após limpeza inicial
+│   └── output/                 # Datasets finais com todas as features aplicadas
 │
-├── src/                        # Código-Fonte Principal
-│   ├── extract/                # Camada de Ingestão e Conexão de Fontes
+├── src/                        # Código-fonte principal do ecossistema
+│   ├── extract/                # Ingestão de dados
 │   │   └── extract.py
 │   │
-│   ├── transform/              # Camada de Transformação e Feature Engineering
-│   │   ├── cleaning.py         # Tratamento de nulos, tipos e padronização textual
-│   │   ├── feature_store.py    # Orquestração e centralização de recursos
-│   │   ├── features.py         # Regras genéricas de engenharia de recursos
-│   │   ├── feature_product.py  # Recursos focados no produto/serviço
-│   │   ├── feature_customer.py # Segmentação de perfil do cliente (Idade, Região)
-│   │   ├── feature_time.py     # Engenharia de variáveis temporais (Horários, Meses)
-│   │   ├── feature_abc.py      # Curva ABC e classificação de relevância
-│   │   └── feature_churn.py    # Indicadores e métricas de evasão/fidelidade
+│   ├── transform/              # Engenharia de Recursos e Transformação
+│   │   ├── cleaning.py         # Sua função 'tratar_texto', 'tratar_nulos', etc.
+│   │   ├── features.py         # Orquestração geral das transformações
+│   │   ├── feature_customer.py # Sua função 'feature_cliente' (idade, região, perfil)
+│   │   ├── feature_time.py     # Classificação de horários ('Hora_visita', turnos)
+│   │   ├── feature_abc.py      # Lógica de classificação da curva ABC
+│   │   └── feature_churn.py    # Indicadores e métricas de evasão e fidelidade
 │   │
-│   ├── analytics/              # Camada de Inteligência e Visualização
-│   │   ├── metrics.py          # Agregações, volumetria e KPI's matemáticos
-│   │   └── charts.py           # Motores de renderização gráfica dinâmicos
+│   ├── analytics/              # Inteligência de Negócios e Dashboards
+│   │   ├── metrics.py          # KPIs matemáticos e agregações
+│   │   └── charts.py           # Motores dos gráficos do Plotly
 │   │
-│   ├── pipeline/               # Orquestração de Fluxo Dinâmico (.pipe)
+│   ├── pipeline/               # Gestão do fluxo de dados (.pipe)
 │   │   └── pipeline.py
 │   │
-│   ├── load/                   # Módulo de persistência e gravação de arquivos
+│   ├── load/                   # Exportação e persistência dos dados
 │   │   └── load.py
 │   │
-│   └── config/                 # Configurações globais e variáveis de ambiente
-│       └── paths.py            # Gerenciamento automatizado de caminhos relativos
+│   └── config/                 # Arquivos de configuração do sistema
+│       └── paths.py            # Gerenciamento de caminhos relativos de arquivos
 │
-├── main.py                     # Ponto de Entrada único do Pipeline
-├── requirements.txt            # Dependências e bibliotecas do projeto
-└── README.md                   # Documentação Técnica
-```
+├── main.py                     # Script que executa o pipeline completo
+├── requirements.txt            # Dependências das bibliotecas (Pandas, Plotly, etc.)
+└── README.md                   # Documentação técnica do projeto
 
 ---
 
