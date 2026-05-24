@@ -1,9 +1,8 @@
 import pandas as pd
 import numpy as np
 
-
+# Padroniza os cabeçalhos para Title_Case e remove caracteres especiais
 def tratar_colunas(df):
-    """Padroniza os nomes das colunas mapeando termos específicos para o formato Title_Case com underscores."""
     df = df.rename(columns={
         'Estado/Pais': 'Estado_Pais',
         'Livre/Guiada': 'Livre_Guiado',
@@ -19,9 +18,8 @@ def tratar_colunas(df):
                   .str.replace(r'[^a-zA-Z0-9_]', '', regex=True))
     return df
 
-
+# Remove espaços e capitaliza os textos categóricos
 def tratar_texto(df):
-    """Remove espaços em branco residuais e padroniza as colunas de texto para o formato capitalizado."""
     return (df
     .assign(
         Nome=lambda x: x['Nome'].astype(str).str.strip().str.title(),
@@ -35,9 +33,8 @@ def tratar_texto(df):
     )
     )
 
-
+# Converte strings de datas em datetime de forma resiliente
 def tratar_datas(df):
-    """Converte strings de datas em objetos datetime válidos e limpa a coluna de horas como string pura."""
     data = df['Data_De_Acesso'].astype(str).str.strip()
     mes = df['Mes'].astype(str).str.strip()
 
@@ -51,18 +48,16 @@ def tratar_datas(df):
     df['Mes'] = pd.to_datetime(mes, format='%m', errors='coerce')
     return df
 
-
+# Trata nulos temporais e reconstrói o número do mês
 def validar_datas(df):
-    """Preenche lacunas de datas vazias, reconstrói meses faltantes e padroniza textos de horas ausentes."""
     return (df.assign(
         Data_De_Acesso=lambda x: x['Data_De_Acesso'].fillna(x['Data_De_Acesso'].min()),
         Mes=lambda x: x['Mes'].dt.month.fillna(x['Data_De_Acesso'].dt.month).astype('Int64'),
         Hora=lambda x: x['Hora'].replace(['Nan', 'None', ''], 'Não informado').fillna("Não informado")
     ))
 
-
+# Preenche nulos categóricos com termos padrão de controle
 def tratar_nulos(df):
-    """Substitui valores nulos de colunas categóricas por termos textuais padrão de controle."""
     return (df.assign(
         Nome=lambda x: x['Nome'].fillna('Nome ausente'),
         Genero=lambda x: x['Genero'].fillna('Sem genero'),
