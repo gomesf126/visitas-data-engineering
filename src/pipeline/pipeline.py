@@ -1,5 +1,5 @@
 from src.transform.features import aplicar_pipeline, CLEANING,ENGINEERING
-import pandas as pd
+
 
 def pipeline(df):
    return(

@@ -23,13 +23,78 @@ def tratar_texto(df):
     return (df
     .assign(
         Nome=lambda x: x['Nome'].astype(str).str.strip().str.title(),
-        Genero=lambda x: x['Genero'].astype(str).str.strip().str.title(),
-        Idade=lambda x: x['Idade'].astype(str).str.strip().str.title(),
-        Etinia=lambda x: x['Etinia'].astype(str).str.strip().str.title(),
-        Estado_Pais=lambda x: x['Estado_Pais'].astype(str).str.strip().str.title(),
-        Livre_Guiado=lambda x: x['Livre_Guiado'].astype(str).str.strip().str.title(),
-        Cupula=lambda x: x['Cupula'].astype(str).str.strip().str.title(),
-        Hora=lambda x: x['Hora'].astype(str).str.strip().str.title()
+        Genero=lambda x: (
+            x['Genero']
+            .astype(str)
+            .str.strip()
+            .str.replace(r'\s+', ' ', regex=True)
+            .str.title()
+            .replace({
+                'Femininof': 'Feminino'
+            })
+            .where(
+                lambda s: s.isin(['Feminino','Masculino','Outro']),'Dados Ausente')),
+
+        Idade=lambda x: (
+            x['Idade']
+            .replace(['nan', 'None', ''], np.nan)
+            .astype(str)
+            .str.strip()
+            .replace(['nan', 'None', ''], np.nan)
+            .str.replace(r'\s+', ' ', regex=True)  # remover espaços duplicados
+            .replace({
+                '0-12': 'Criança',
+                '13-17': 'Jovem',
+                '18-59': 'Adulto',
+                '60  +': 'Senior'
+            })
+            .replace({
+                '60 - +': '60 +'
+            })
+        ),
+        Etinia=lambda x:
+        x['Etinia']
+        .replace(['nan', 'None', ''], np.nan)
+        .astype(str)
+        .str.strip()
+        .str.title()
+        .str.replace(r'\s+', ' ', regex=True)  # remover espaços duplicados
+        .where(lambda s: s.isin(['Branco','Outro','Negro']),"Dados ausentes")
+        ,
+        Estado_Pais=lambda x: (
+            x['Estado_Pais']
+            .replace(['nan', 'None', ''], np.nan)
+            .astype(str)
+            .str.strip()
+            .str.upper()
+            .str.replace(r'\s+', ' ', regex=True)
+            .replace({
+                'OUTROS': 'OUTROS ESTADOS'
+            })
+            .where(lambda s: s.isin(['DF','OUTROS ESTADOS','OUTROS PAISES']), 'Dados ausentes' )
+        ),
+        Livre_Guiado=lambda x: (
+            x['Livre_Guiado']
+            .replace(['nan', 'None', ''], np.nan)
+            .astype(str)
+            .str.strip()
+            .str.upper()
+            .str.replace(r'\s+', ' ', regex=True)
+            .where(lambda s: s.isin(['LIVRE','GUIADA']),"Dados ausentes" )
+
+        ),
+        Cupula=lambda x:
+        x['Cupula']
+        .replace(['nan', 'None', ''], np.nan)
+        .astype(str)
+        .str.strip()
+        .str.title(),
+
+        Hora=lambda x:
+        x['Hora'].replace(['nan', 'None', ''], np.nan)
+        .astype(str)
+        .str.strip()
+        .where(lambda s: s.isin(['11:00','14:30','16:00','17:00','18:00','EXTRA']),'Dados ausentes')
     )
     )
 
@@ -59,11 +124,11 @@ def validar_datas(df):
 # Preenche nulos categóricos com termos padrão de controle
 def tratar_nulos(df):
     return (df.assign(
-        Nome=lambda x: x['Nome'].fillna('Nome ausente'),
-        Genero=lambda x: x['Genero'].fillna('Sem genero'),
-        Idade=lambda x: x['Idade'].fillna("A declarar"),
-        Etinia=lambda x: x['Etinia'].fillna('Sem etinia'),
-        Estado_Pais=lambda x: x['Estado_Pais'].fillna('A declarar'),
-        Livre_Guiado=lambda x: x['Livre_Guiado'].fillna('Ausente'),
-        Cupula=lambda x: x['Cupula'].fillna('Ausente')
+        Nome=lambda x: x['Nome'].fillna('Dados Ausentes'),
+        Genero=lambda x: x['Genero'].fillna('Dados Ausentes'),
+        Idade=lambda x: x['Idade'].fillna("Dados Ausentes"),
+        Etinia=lambda x: x['Etinia'].fillna('Dados Ausentes'),
+        Estado_Pais=lambda x: x['Estado_Pais'].fillna('Dados Ausentes'),
+        Livre_Guiado=lambda x: x['Livre_Guiado'].fillna('Dados Ausentes'),
+        Cupula=lambda x: x['Cupula'].fillna('Dados Ausentes')
     ))

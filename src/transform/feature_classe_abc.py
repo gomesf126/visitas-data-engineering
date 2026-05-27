@@ -30,21 +30,3 @@ def feature_classe_abc(df):
         how='left'
     )
 
-
-from src.extract.extrair import extrair, montar_tabela
-from src.transform.limpeza import *
-from src.pipeline.pipeline import pipeline
-
-from src.transform.feature_cliente import feature_cliente
-from src.transform.feature_churn import churn_cliente
-# ------------- FLUXO DE EXECUÇÃO PRINCIPAL -------------
-arquivo, erros = extrair()
-df = montar_tabela(arquivo)
-df = tratar_colunas(df)
-df = pipeline(df)
-df = feature_cliente(df)
-df= churn_cliente(df)
-df=feature_classe_abc(df)
-print(df['Segmento_Fidelidade'])
-print(df['Hora_visita'])
-print(df[['Nome', 'percentual_cliente', 'percentual_acumulado', 'Classe_abc','Total_Visitas']])
