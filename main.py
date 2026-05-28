@@ -2,6 +2,7 @@ import pandas as pd
 from src.extract.extrair import extrair,montar_tabela
 from src.pipeline.pipeline import pipeline
 from src.analytics.metricas import metricas
+#from src.analytics.metricas import Obter_Total_Visitas,Obter_Total_Visitantes_Unicos
 import  logging
 
 def main():
@@ -15,10 +16,10 @@ def main():
     logging.info("Pipeline carregado com sucesso")
 
     df = pipeline(df)
-
     metrica = metricas(df)
 
-    #print(df['Livre_Guiado'].value_counts(dropna=False))
+    #res = Obter_Total_Visitantes_Unicos(df ,2026,2)
+    #print(res)
 
     for nome, tabela in metrica.items():
 
