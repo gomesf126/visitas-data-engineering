@@ -17,12 +17,6 @@ def main():
     df = pipeline(df)
 
     metrica = metricas(df)
-    print(df['Etinia'].unique())
-    print(df['Hora'].unique())
-    print(df['Livre_Guiado'].unique())
-    print("cupula",df['Cupula'].unique())
-    print('data', df['Idade'].unique())
-    print()
 
     #print(df['Livre_Guiado'].value_counts(dropna=False))
 
