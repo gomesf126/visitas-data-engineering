@@ -12,8 +12,8 @@ mapa_semana = {
 }
 
 mapa_mes = {
-    1:'Jan', 2:'Fev', 3:'Mar', 4:'Abr', 5:'Mai', 6:'Jun',
-    7:'Jul', 8:'Ago', 9:'Set', 10:'Out', 11:'Nov', 12:'Dez'
+    1:'Janeiro', 2:'Fevereiro', 3:'Março', 4:'Abril', 5:'Maio', 6:'Junho',
+    7:'Julho', 8:'Agosto', 9:'Setembro', 10:'Outubro', 11:'Novembro', 12:'Dezembro'
 }
 mapa_trimestre = {
  1:'1° Trimestre',
@@ -25,10 +25,10 @@ mapa_trimestre = {
 def feature_tempo(df):
     return (df
         .assign(
-            Dia     = lambda x: x['Data_De_Acesso'].dt.day,
+            Dia     = lambda x: x['Data_De_Acesso'].dt.day.astype('Int64'),
             Mes     = lambda x: x['Data_De_Acesso'].dt.month.map(mapa_mes),
-            Ano     = lambda x: x['Data_De_Acesso'].dt.year,
-            Mes_Num = lambda x: x['Data_De_Acesso'].dt.month,
+            Ano=lambda x: x['Data_De_Acesso'].dt.year.astype('Int64'),
+            Mes_Num=lambda x: x['Data_De_Acesso'].dt.month.astype('Int64'),
             Semana  = lambda x: x['Data_De_Acesso'].dt.day_name().map(mapa_semana),
             Trimestre = lambda x: x['Data_De_Acesso'].dt.quarter.map(mapa_trimestre),
             Quinzena  = lambda x: np.where(x['Data_De_Acesso'].dt.day <=15 ,'1° Quinzena', '2° Quinzena')

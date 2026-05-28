@@ -4,7 +4,7 @@ import plotly.express as px
 def criar_grafico_genero(df_genero):
     return px.pie(
         df_genero,
-        values='Total_de_Visitas',
+        values='Total_de_Visitantes',
         names='Genero',
         hole=0.4,
         color_discrete_sequence=px.colors.qualitative.Safe

@@ -12,17 +12,23 @@ def filtrar_base(df, ano=None, mes=None):
 
 # --- FUNÇÕES PRINCIPAIS SIMPLIFICADAS ---
 
-def Total_Visitantes(df, ano=None, mes=None):
+# 1. Definição das funções de contagem
+def Obter_Total_Visitas(df, ano=None, mes=None):
     base = filtrar_base(df, ano, mes)
-    return base['Nome'].nunique()
+    return base['Nome'].count() # Volume total de entradas
+
+def Obter_Total_Visitantes_Unicos(df, ano=None, mes=None):
+    base = filtrar_base(df, ano, mes)
+    return base['Nome'].nunique() # Quantidade de pessoas físicas
+
 
 def Total_Genero(df, ano=None, mes=None):
     base = filtrar_base(df, ano, mes)
     return (
         base
         .groupby('Genero', as_index=False)
-        .agg(Total_de_Visitas = ('Nome','nunique'))
-        .sort_values(['Total_de_Visitas'], ascending=[False])
+        .agg(Total_de_Visitantes = ('Nome','nunique'))
+        .sort_values(['Total_de_Visitantes'], ascending=[False])
         .reset_index(drop=True)
     )
 
@@ -98,7 +104,8 @@ def Total_Visitantes_Diaria(df, ano=None, mes=None):
 
 def metricas(df: pd.DataFrame, ano=None, mes=None) -> dict:
     return {
-        'total_visitantes': Total_Visitantes(df, ano, mes),
+        'Obter_Total_Visitantes_Unicos': Obter_Total_Visitantes_Unicos(df, ano, mes),
+        'Obter_Total_Visitas': Obter_Total_Visitas(df, ano, mes),
         'total_genero': Total_Genero(df, ano, mes),
         'total_idade': Total_Idade(df, ano, mes),
         'total_estado_pais': Total_Estado_Pais(df, ano, mes),
