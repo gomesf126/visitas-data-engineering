@@ -9,6 +9,9 @@ import streamlit as st
 from datetime import datetime
 from streamlit_autorefresh import st_autorefresh
 from zoneinfo import ZoneInfo
+hora_brasil = datetime.now(
+    ZoneInfo("America/Sao_Paulo")
+)
 
 from src.analytics.metricas import metricas
 from src.analytics.charts import *
