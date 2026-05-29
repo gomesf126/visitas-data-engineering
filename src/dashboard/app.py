@@ -24,12 +24,18 @@ st.set_page_config(
     layout="wide"
 )
 
-# Atualização automática
-st_autorefresh(interval=1000, key="tempo")
+# =========================================================
+# AUTO REFRESH
+# =========================================================
+# Atualiza a cada 1 minuto
+st_autorefresh(
+    interval=60 * 1000,
+    key="tempo"
+)
 
 
 # =========================================================
-# CACHE
+# CACHE BASE
 # =========================================================
 @st.cache_data
 def carregar_dados_projeto():
@@ -43,6 +49,48 @@ def carregar_dados_projeto():
     return df
 
 
+# =========================================================
+# CACHE MÉTRICAS
+# =========================================================
+@st.cache_resource
+def carregar_metricas(df, ano, mes):
+
+    return metricas(
+        df.copy(),
+        ano=ano,
+        mes=mes
+    )
+
+
+# =========================================================
+# CACHE GRÁFICOS
+# =========================================================
+@st.cache_resource
+def carregar_graficos(res):
+
+    return {
+
+        'fig_genero': criar_grafico_genero(
+            res['total_genero']
+        ),
+
+        'fig_idade': criar_grafico_idade(
+            res['total_idade']
+        ),
+
+        'fig_diaria': criar_grafico_linha_diaria(
+            res['Total_Visitantes_Diaria']
+        ),
+
+        'fig_hora': criar_graficos_hora(
+            res['total_hora']
+        )
+    }
+
+
+# =========================================================
+# CARREGAMENTO DA BASE
+# =========================================================
 df = carregar_dados_projeto()
 
 
@@ -52,9 +100,13 @@ df = carregar_dados_projeto()
 st.sidebar.header("Filtros")
 
 
-# ---------------- ANO ----------------
+# =========================================================
+# FILTRO ANO
+# =========================================================
 anos_disponiveis = sorted(
-    df['Ano'].dropna().unique(),
+    df['Ano']
+    .dropna()
+    .unique(),
     reverse=True
 )
 
@@ -64,7 +116,9 @@ ano_selecionado = st.sidebar.selectbox(
 )
 
 
-# ---------------- MÊS ----------------
+# =========================================================
+# FILTRO MÊS
+# =========================================================
 meses_disponiveis = sorted(
     df[df['Ano'] == ano_selecionado]['Mes_Num']
     .dropna()
@@ -81,11 +135,17 @@ mes_selecionado = st.sidebar.selectbox(
 # =========================================================
 # MÉTRICAS
 # =========================================================
-res = metricas(
-    df.copy(),
-    ano=ano_selecionado,
-    mes=mes_selecionado
+res = carregar_metricas(
+    df,
+    ano_selecionado,
+    mes_selecionado
 )
+
+
+# =========================================================
+# GRÁFICOS
+# =========================================================
+graficos = carregar_graficos(res)
 
 
 # =========================================================
@@ -106,7 +166,7 @@ st.subheader("Indicadores Principais")
 
 
 # =========================================================
-# FUNÇÃO PADRÃO DOS CARDS
+# FUNÇÃO CARD
 # =========================================================
 def criar_card(coluna, titulo, valor):
 
@@ -119,77 +179,68 @@ def criar_card(coluna, titulo, valor):
 
 
 # =========================================================
-# FUNÇÃO PADRÃO DOS GRÁFICOS
+# FUNÇÃO GRÁFICO
 # =========================================================
 def renderizar_grafico(titulo, figura):
-
     with st.container(border=True):
-
         st.subheader(titulo)
-
-        st.plotly_chart(
-            figura,
-            use_container_width=True
-        )
+        st.plotly_chart( figura,use_container_width=True)
 
 
 # =========================================================
-# CARDS PRINCIPAIS
+# MÉTRICAS PRINCIPAIS
 # =========================================================
 total_unicos = res['Obter_Total_Visitantes_Unicos']
 
 total_visitas = res['Obter_Total_Visitas']
 
-agora = datetime.now()
 
-
+# =========================================================
+# CARDS
+# =========================================================
 c1, c2, c3, c4 = st.columns(4)
 
+
+# =========================================================
+# CARD VISITANTES ÚNICOS
+# =========================================================
 criar_card(
     c1,
     '👥 Visitantes únicos',
     total_unicos
 )
 
+
+# =========================================================
+# CARD TOTAL VISITAS
+# =========================================================
 criar_card(
     c2,
     '📅 Total de visitas',
     total_visitas
 )
 
+
+# =========================================================
+# CARD DATA
+# =========================================================
 with c3:
 
     st.metric(
         label="📆 Data atual",
-        value=agora.strftime("%d/%m/%Y")
+        value=datetime.now().strftime("%d/%m/%Y")
     )
 
+
+# =========================================================
+# CARD HORA
+# =========================================================
 with c4:
 
     st.metric(
         label="⏰ Hora atual",
-        value=agora.strftime("%H:%M:%S")
+        value=datetime.now().strftime("%H:%M")
     )
-
-
-# =========================================================
-# CRIAÇÃO DOS GRÁFICOS
-# =========================================================
-fig_genero = criar_grafico_genero(
-    res['total_genero']
-)
-
-fig_idade = criar_grafico_idade(
-    res['total_idade']
-)
-
-fig_diaria = criar_grafico_linha_diaria(
-    res['Total_Visitantes_Diaria']
-)
-
-fig_hora = criar_graficos_hora(
-    res['total_hora']
-)
 
 
 # =========================================================
@@ -205,7 +256,7 @@ st.subheader("Análise Gráfica")
 # =========================================================
 renderizar_grafico(
     "Fluxo Diário de Visitantes",
-    fig_diaria
+    graficos['fig_diaria']
 )
 
 
@@ -218,14 +269,14 @@ with g1:
 
     renderizar_grafico(
         "Distribuição por Gênero",
-        fig_genero
+        graficos['fig_genero']
     )
 
 with g2:
 
     renderizar_grafico(
         "Visitantes por Idade",
-        fig_idade
+        graficos['fig_idade']
     )
 
 
@@ -238,7 +289,7 @@ with g3:
 
     renderizar_grafico(
         "Horário de Pico",
-        fig_hora
+        graficos['fig_hora']
     )
 
 with g4:
