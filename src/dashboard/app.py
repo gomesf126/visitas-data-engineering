@@ -169,10 +169,9 @@ with c3:
 # CARD HORA
 
 with c4:
-
     st.metric(
         label="⏰ Hora atual",
-        value=datetime.now().strftime("%H:%M")
+        value=hora_brasil.strftime("%H:%M")
     )
 
 # SEÇÃO GRÁFICOS
