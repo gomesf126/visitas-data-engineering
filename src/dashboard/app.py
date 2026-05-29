@@ -8,6 +8,7 @@ import streamlit as st
 
 from datetime import datetime
 from streamlit_autorefresh import st_autorefresh
+from zoneinfo import ZoneInfo
 
 from src.analytics.metricas import metricas
 from src.analytics.charts import *
@@ -17,27 +18,23 @@ from src.pipeline.pipeline import pipeline
 from src.transform.feature_tempo import mapa_mes
 
 
-# =========================================================
+
 # CONFIGURAÇÃO DA PÁGINA
-# =========================================================
 st.set_page_config(
     page_title="Dashboard Dinâmico",
     layout="wide"
 )
 
-# =========================================================
+
 # AUTO REFRESH
-# =========================================================
 # Atualiza a cada 1 minuto
 st_autorefresh(
     interval=60 * 1000,
     key="tempo"
 )
 
-
-# =========================================================
 # CACHE BASE
-# =========================================================
+
 @st.cache_data
 def carregar_dados_projeto():
 
@@ -49,114 +46,64 @@ def carregar_dados_projeto():
 
     return df
 
-
-# =========================================================
 # CACHE MÉTRICAS
-# =========================================================
+
 @st.cache_resource
 def carregar_metricas(df, ano, mes):
-
     return metricas(
         df.copy(),
         ano=ano,
         mes=mes
     )
 
-
-# =========================================================
 # CACHE GRÁFICOS
-# =========================================================
+
 @st.cache_resource
 def carregar_graficos(res):
-
     return {
 
-        'fig_genero': criar_grafico_genero(
-            res['total_genero']
-        ),
+        'fig_genero': criar_grafico_genero(res['total_genero']),
 
-        'fig_idade': criar_grafico_idade(
-            res['total_idade']
-        ),
+        'fig_idade': criar_grafico_idade(res['total_idade']),
 
-        'fig_diaria': criar_grafico_linha_diaria(
-            res['Total_Visitantes_Diaria']
-        ),
+        'fig_diaria': criar_grafico_linha_diaria(res['Total_Visitantes_Diaria']),
 
-        'fig_hora': criar_graficos_hora(
-            res['total_hora']
-        )
+        'fig_hora': criar_graficos_hora(res['total_hora'])
     }
-
-
-# =========================================================
 # CARREGAMENTO DA BASE
-# =========================================================
+
 df = carregar_dados_projeto()
 
+# --------------------------SIDEBAR--------------------------
 
-# =========================================================
-# SIDEBAR
-# =========================================================
 st.sidebar.header("Filtros")
 
+anos_disponiveis = sorted(df['Ano'].dropna().unique(),reverse=True)
+ano_selecionado = st.sidebar.selectbox("Selecione o Ano", anos_disponiveis)
 
-# =========================================================
-# FILTRO ANO
-# =========================================================
-anos_disponiveis = sorted(
-    df['Ano']
-    .dropna()
-    .unique(),
-    reverse=True
-)
-
-ano_selecionado = st.sidebar.selectbox(
-    "Selecione o Ano",
-    anos_disponiveis
-)
-
-
-# =========================================================
-# FILTRO MÊS
-# =========================================================
-meses_disponiveis = sorted(
-    df[df['Ano'] == ano_selecionado]['Mes_Num']
-    .dropna()
-    .unique()
-)
-
+meses_disponiveis = sorted(df[df['Ano'] == ano_selecionado]['Mes_Num'].dropna().unique())
 mes_selecionado = st.sidebar.selectbox(
-    "Selecione o Mês",
-    meses_disponiveis,
-    format_func=lambda x: mapa_mes.get(x, str(x))
-)
+    "Selecione o Mês", meses_disponiveis, format_func=lambda x: mapa_mes.get(x, str(x)) )
 
-
-# =========================================================
 # MÉTRICAS
-# =========================================================
+
 res = carregar_metricas(
     df,
     ano_selecionado,
     mes_selecionado
 )
 
-
-# =========================================================
 # GRÁFICOS
-# =========================================================
 graficos = carregar_graficos(res)
 
 
-# =========================================================
+
 # TÍTULO
-# =========================================================
 nome_mes = mapa_mes.get(mes_selecionado)
 
 st.markdown(
     f"""
-    <h1 style='text-align:left;'>
+    <h1 style='text-align:center;'>
         Dashboard de Visitas - {nome_mes}/{ano_selecionado}
     </h1>
     """,
@@ -166,65 +113,49 @@ st.markdown(
 st.subheader("Indicadores Principais")
 
 
-# =========================================================
+
 # FUNÇÃO CARD
-# =========================================================
 def criar_card(coluna, titulo, valor):
 
     with coluna:
-
         st.metric(
             label=titulo,
             value=f"{valor:,}".replace(",", ".")
         )
 
 
-# =========================================================
 # FUNÇÃO GRÁFICO
-# =========================================================
 def renderizar_grafico(titulo, figura):
     with st.container(border=True):
         st.subheader(titulo)
         st.plotly_chart( figura,use_container_width=True)
 
 
-# =========================================================
 # MÉTRICAS PRINCIPAIS
-# =========================================================
 total_unicos = res['Obter_Total_Visitantes_Unicos']
 
 total_visitas = res['Obter_Total_Visitas']
 
 
-# =========================================================
 # CARDS
-# =========================================================
 c1, c2, c3, c4 = st.columns(4)
 
 
-# =========================================================
 # CARD VISITANTES ÚNICOS
-# =========================================================
 criar_card(
     c1,
     '👥 Visitantes únicos',
     total_unicos
 )
 
-
-# =========================================================
 # CARD TOTAL VISITAS
-# =========================================================
 criar_card(
     c2,
     '📅 Total de visitas',
     total_visitas
 )
 
-
-# =========================================================
 # CARD DATA
-# =========================================================
 with c3:
 
     st.metric(
@@ -232,10 +163,8 @@ with c3:
         value=datetime.now().strftime("%d/%m/%Y")
     )
 
-
-# =========================================================
 # CARD HORA
-# =========================================================
+
 with c4:
 
     st.metric(
@@ -243,62 +172,48 @@ with c4:
         value=datetime.now().strftime("%H:%M")
     )
 
-
-# =========================================================
 # SEÇÃO GRÁFICOS
-# =========================================================
+
 st.markdown("---")
 
 st.subheader("Análise Gráfica")
 
-
-# =========================================================
 # GRÁFICO PRINCIPAL
-# =========================================================
+
 renderizar_grafico(
     "Fluxo Diário de Visitantes",
     graficos['fig_diaria']
 )
 
-
-# =========================================================
 # SEGUNDA LINHA
-# =========================================================
+
 g1, g2 = st.columns(2)
 
 with g1:
-
     renderizar_grafico(
         "Distribuição por Gênero",
         graficos['fig_genero']
     )
 
 with g2:
-
     renderizar_grafico(
         "Visitantes por Idade",
         graficos['fig_idade']
     )
 
-
-# =========================================================
 # TERCEIRA LINHA
-# =========================================================
+
 g3, g4 = st.columns(2)
 
 with g3:
-
     renderizar_grafico(
         "Horário de Pico",
         graficos['fig_hora']
     )
 
 with g4:
-
     with st.container(border=True):
-
         st.subheader("Tabela de Gênero")
-
         st.dataframe(
             res['total_genero'],
             use_container_width=True
