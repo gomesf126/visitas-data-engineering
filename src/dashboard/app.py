@@ -38,7 +38,7 @@ st_autorefresh(
 )
 
 # CACHE BASE
-#@st.cache_data
+@st.cache_data
 def carregar_dados_projeto():
     arquivo, erros = extrair()
     df = montar_tabela(arquivo)
@@ -46,7 +46,7 @@ def carregar_dados_projeto():
     return df
 
 # CACHE MÉTRICAS
-#@st.cache_data
+@st.cache_data
 def carregar_metricas(df, ano, mes):
     return metricas(
         df.copy(),
@@ -55,7 +55,7 @@ def carregar_metricas(df, ano, mes):
     )
 
 # CACHE GRÁFICOS
-#@st.cache_data(show_spinner=False, hash_funcs={dict: lambda _: None})
+@st.cache_data(show_spinner=False, hash_funcs={dict: lambda _: None})
 def carregar_graficos(res):
     return {
         'fig_genero': criar_grafico_genero(res['total_genero']),
