@@ -41,7 +41,7 @@ def carregar_dados_projeto():
     return df
 
 # CACHE MÉTRICAS
-@st.cache_resource
+@st.cache_data
 def carregar_metricas(df, ano, mes):
     return metricas(
         df.copy(),
@@ -50,7 +50,7 @@ def carregar_metricas(df, ano, mes):
     )
 
 # CACHE GRÁFICOS
-@st.cache_resource
+@st.cache_data
 def carregar_graficos(res):
     return {
         'fig_genero': criar_grafico_genero(res['total_genero']),
@@ -187,3 +187,4 @@ with g6:
             st.dataframe(
                 res['total_genero'], use_container_width=True
             )
+st.write(list(res.keys()))
