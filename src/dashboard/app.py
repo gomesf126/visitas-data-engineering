@@ -50,7 +50,7 @@ def carregar_metricas(df, ano, mes):
     )
 
 # CACHE GRÁFICOS
-@st.cache_data
+@st.cache_data(show_spinner=False, hash_funcs={dict: lambda _: None})
 def carregar_graficos(res):
     return {
         'fig_genero': criar_grafico_genero(res['total_genero']),
