@@ -1,9 +1,8 @@
 #import sys
 #from pathlib import Path
-
 #sys.path.append(str(Path(__file__).resolve().parents[2]))
-
 import pandas as pd
+
 import streamlit as st
 
 from datetime import datetime
@@ -38,7 +37,7 @@ st_autorefresh(
 )
 
 # CACHE BASE
-#@st.cache_data
+@st.cache_data
 def carregar_dados_projeto():
     arquivo, erros = extrair()
     df = montar_tabela(arquivo)
