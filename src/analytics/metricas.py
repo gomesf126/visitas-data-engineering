@@ -113,5 +113,5 @@ def metricas(df: pd.DataFrame, ano=None, mes=None) -> dict:
         'total_hora': Total_Hora(df, ano, mes),
         'total_livre_guiada': Total_Livre_Guiada(df, ano, mes),
         'total_cupula': Total_cupula(df, ano, mes),
-        'Total_Visitantes_Diaria': Total_Visitantes_Diaria(df, ano, mes)
+        'total_visitantes_diaria': Total_Visitantes_Diaria(df, ano, mes)
     }

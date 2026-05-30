@@ -115,3 +115,49 @@ def criar_graficos_hora(df_hora):
     )
 
     return fig
+
+#Quantidade de visitantes que passaram pela cúpula.
+def criar_grafico_cupula(df_cupula):
+    fig = px.bar(
+        df_cupula,
+        x='Cupula',
+        y='Total',
+        color='Cupula',
+        text_auto=True,
+        color_discrete_sequence=px.colors.qualitative.Set2
+    )
+    fig.update_traces(
+        hovertemplate='<b>Cúpula:</b> %{x} <br> <b>Total:</b> %{y}<extra> </extra>',
+        textposition='outside',
+    )
+    fig.update_layout(
+        title='Visitantes que passaram pela cúpula',
+        title_x=0.5,
+        xaxis_title='Cúpula',
+        yaxis_title='Total',
+        template='plotly_white'
+    )
+    return fig
+
+
+def criar_grafico_livre_guiado(livre_guiado):
+    fig =px.pie(
+        livre_guiado,
+        names='Livre_Guiado',
+        values='Total',
+        hole=0.55,
+        color_discrete_sequence=px.colors.qualitative.Set2
+
+    )
+    fig.update_traces(
+        textinfo='label'
+    )
+    fig.update_layout(
+        template='plotly_white',
+        title_x=0.55,
+        title='Visitas livres ou guiadas',
+        legend_orientation="h"
+    )
+
+
+    return fig
