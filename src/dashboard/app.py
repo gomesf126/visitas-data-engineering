@@ -20,6 +20,11 @@ from src.extract.extrair import extrair, montar_tabela
 from src.pipeline.pipeline import pipeline
 from src.transform.feature_tempo import mapa_mes
 
+if st.sidebar.button("Limpar Cache do App"):
+    st.cache_data.clear()
+    st.cache_resource.clear()
+    st.rerun()
+
 # CONFIGURAÇÃO DA PÁGINA
 st.set_page_config(
     page_title="Dashboard Dinâmico",
