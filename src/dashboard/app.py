@@ -188,3 +188,5 @@ with g6:
                 res['total_genero'], use_container_width=True
             )
 #st.write(list(res.keys()))
+res = carregar_metricas(df, ano_selecionado, mes_selecionado)
+st.write(res.keys())
