@@ -187,4 +187,4 @@ with g6:
             st.dataframe(
                 res['total_genero'], use_container_width=True
             )
-st.write(list(res.keys()))
+#st.write(list(res.keys()))
